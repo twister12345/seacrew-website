@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MOBX CREWING</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -66,6 +68,49 @@
       padding: 8px 16px;
       margin-top: 10px;
     }
+    #chatbot {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 300px;
+      max-height: 400px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      z-index: 1001;
+    }
+    #chatbot-header {
+      background-color: #003366;
+      color: white;
+      padding: 10px;
+      font-weight: bold;
+    }
+    #chatbot-messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+    #chatbot-input {
+      display: flex;
+      border-top: 1px solid #ccc;
+    }
+    #chatbot-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+    }
+    #chatbot-input button {
+      padding: 10px;
+      border: none;
+      background-color: #003366;
+      color: white;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -73,7 +118,7 @@
     <h1>⚓ MOBX CREWING</h1>
     <div class="language-auth">
       <div>
-        <img src="https://flagcdn.com/w40/me.png" alt="CG" title="Crnogorski">
+        <img src="https://flagcdn.com/w40/me.png" alt="CG" title="Montenegrin">
         <img src="https://flagcdn.com/w40/gb.png" alt="EN" title="English">
       </div>
       <div>
@@ -87,9 +132,9 @@
   <div id="loginModal" class="modal">
     <div class="modal-content">
       <h2>Login</h2>
-      <input type="email" placeholder="Email">
-      <input type="password" placeholder="Password">
-      <button onclick="alert('Logged in (demo)!')">Login</button>
+      <input type="email" id="loginEmail" placeholder="Email">
+      <input type="password" id="loginPassword" placeholder="Password">
+      <button onclick="login()">Login</button>
       <button onclick="closeModal('loginModal')" style="float:right;">Close</button>
     </div>
   </div>
@@ -98,16 +143,36 @@
   <div id="signupModal" class="modal">
     <div class="modal-content">
       <h2>Sign Up</h2>
-      <input type="text" placeholder="Full Name">
-      <input type="email" placeholder="Email">
-      <input type="password" placeholder="Password">
-      <button onclick="verifyEmail()">Sign Up</button>
+      <input type="text" id="signupName" placeholder="Full Name">
+      <input type="email" id="signupEmail" placeholder="Email">
+      <input type="password" id="signupPassword" placeholder="Password">
+      <button onclick="signUp()">Sign Up</button>
       <button onclick="closeModal('signupModal')" style="float:right;">Close</button>
       <p id="verify-msg" style="margin-top:10px;"></p>
     </div>
   </div>
 
+  <!-- Chatbot UI -->
+  <div id="chatbot">
+    <div id="chatbot-header">MOBX ChatBot</div>
+    <div id="chatbot-messages"></div>
+    <div id="chatbot-input">
+      <input type="text" id="userInput" placeholder="Type a message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
   <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
     function openModal(id) {
       document.getElementById(id).style.display = 'block';
     }
@@ -116,10 +181,61 @@
       document.getElementById(id).style.display = 'none';
     }
 
-    function verifyEmail() {
-      const msg = document.getElementById('verify-msg');
-      msg.innerText = "A verification email has been sent to your inbox. (simulacija)";
-      msg.style.color = "green";
+    function signUp() {
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          return userCredential.user.sendEmailVerification();
+        })
+        .then(() => {
+          document.getElementById('verify-msg').innerText = "Verification email sent.";
+        })
+        .catch(error => {
+          alert(error.message);
+        });
+    }
+
+    function login() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          alert("Welcome back!");
+        })
+        .catch(error => {
+          alert(error.message);
+        });
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('userInput');
+      const message = input.value.trim();
+      if (!message) return;
+
+      const messages = document.getElementById('chatbot-messages');
+      const userMsg = document.createElement('div');
+      userMsg.textContent = 'You: ' + message;
+      messages.appendChild(userMsg);
+
+      const botMsg = document.createElement('div');
+      botMsg.textContent = 'Bot: ' + generateFakeResponse(message);
+      messages.appendChild(botMsg);
+
+      input.value = '';
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function generateFakeResponse(userMessage) {
+      if (userMessage.toLowerCase().includes("hello")) {
+        return "Hi! How can I assist you with MOBX Crewing today?";
+      } else if (userMessage.toLowerCase().includes("job")) {
+        return "Please visit our jobs section or sign up to get started.";
+      } else {
+        return "I'm here to help! Could you please clarify your question?";
+      }
     }
   </script>
 </body>

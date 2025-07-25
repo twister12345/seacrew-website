@@ -6,6 +6,7 @@
   <title>MOBX CREWING</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -68,48 +69,21 @@
       padding: 8px 16px;
       margin-top: 10px;
     }
-    #chatbot {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: white;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      width: 300px;
-      max-height: 400px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      z-index: 1001;
-    }
-    #chatbot-header {
-      background-color: #003366;
-      color: white;
+    #user-info {
       padding: 10px;
-      font-weight: bold;
+      text-align: right;
+      background-color: #e0e0e0;
     }
-    #chatbot-messages {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-      background: #f9f9f9;
+    .content {
+      padding: 30px;
+      max-width: 900px;
+      margin: auto;
     }
-    #chatbot-input {
-      display: flex;
-      border-top: 1px solid #ccc;
+    .content h2 {
+      color: #003366;
     }
-    #chatbot-input input {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      outline: none;
-    }
-    #chatbot-input button {
-      padding: 10px;
-      border: none;
-      background-color: #003366;
-      color: white;
-      cursor: pointer;
+    .content p {
+      line-height: 1.6;
     }
   </style>
 </head>
@@ -118,15 +92,43 @@
     <h1>⚓ MOBX CREWING</h1>
     <div class="language-auth">
       <div>
-        <img src="https://flagcdn.com/w40/me.png" alt="CG" title="Montenegrin">
+        <img src="https://flagcdn.com/w40/me.png" alt="CG" title="Crnogorski">
         <img src="https://flagcdn.com/w40/gb.png" alt="EN" title="English">
       </div>
       <div>
         <button onclick="openModal('loginModal')">Login</button>
         <button onclick="openModal('signupModal')">Sign up</button>
+        <button onclick="logoutUser()">Logout</button>
       </div>
     </div>
   </header>
+
+  <div id="user-info"></div>
+
+  <div class="content">
+    <h2>Welcome to MOBX Crewing Agency</h2>
+    <p>
+      MOBX Crewing is a professional maritime recruitment and crew management company dedicated to connecting highly qualified seafarers with global ship owners and operators. Our goal is to ensure optimal crew performance, safety, and satisfaction by providing reliable and skilled maritime personnel.
+    </p>
+    <h3>Our Services</h3>
+    <ul>
+      <li>Recruitment of Officers and Ratings for all vessel types</li>
+      <li>Pre-employment screening, certification checks, and interviews</li>
+      <li>Crew planning and scheduling</li>
+      <li>Travel and documentation support</li>
+      <li>Training and development support</li>
+    </ul>
+    <h3>Why Choose MOBX?</h3>
+    <ul>
+      <li>Extensive database of certified and experienced crew</li>
+      <li>Compliance with MLC 2006 and STCW standards</li>
+      <li>Personalized client approach and fast response times</li>
+      <li>Focus on safety, retention, and long-term partnerships</li>
+    </ul>
+    <p>
+      Whether you’re a shipowner seeking reliable crew or a seafarer looking for your next contract, MOBX Crewing is your trusted maritime HR partner.
+    </p>
+  </div>
 
   <!-- LOGIN MODAL -->
   <div id="loginModal" class="modal">
@@ -134,7 +136,7 @@
       <h2>Login</h2>
       <input type="email" id="loginEmail" placeholder="Email">
       <input type="password" id="loginPassword" placeholder="Password">
-      <button onclick="login()">Login</button>
+      <button onclick="loginUser()">Login</button>
       <button onclick="closeModal('loginModal')" style="float:right;">Close</button>
     </div>
   </div>
@@ -146,32 +148,26 @@
       <input type="text" id="signupName" placeholder="Full Name">
       <input type="email" id="signupEmail" placeholder="Email">
       <input type="password" id="signupPassword" placeholder="Password">
-      <button onclick="signUp()">Sign Up</button>
+      <button onclick="signUpUser()">Sign Up</button>
       <button onclick="closeModal('signupModal')" style="float:right;">Close</button>
       <p id="verify-msg" style="margin-top:10px;"></p>
     </div>
   </div>
 
-  <!-- Chatbot UI -->
-  <div id="chatbot">
-    <div id="chatbot-header">MOBX ChatBot</div>
-    <div id="chatbot-messages"></div>
-    <div id="chatbot-input">
-      <input type="text" id="userInput" placeholder="Type a message...">
-      <button onclick="sendMessage()">Send</button>
-    </div>
-  </div>
-
   <script>
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyDBCwn0gpqIfxGFhjgPyp4djv34N4rpMyI",
+      authDomain: "mobx-auth-77004.firebaseapp.com",
+      projectId: "mobx-auth-77004",
+      storageBucket: "mobx-auth-77004.appspot.com",
+      messagingSenderId: "155941750383",
+      appId: "1:155941750383:web:3a5341bad5ebd91aff2f9a",
+      measurementId: "G-0BJ503BRT6"
     };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.firestore();
 
     function openModal(id) {
       document.getElementById(id).style.display = 'block';
@@ -181,61 +177,52 @@
       document.getElementById(id).style.display = 'none';
     }
 
-    function signUp() {
+    function signUpUser() {
+      const name = document.getElementById('signupName').value;
       const email = document.getElementById('signupEmail').value;
       const password = document.getElementById('signupPassword').value;
 
       auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          return userCredential.user.sendEmailVerification();
+        .then((userCredential) => {
+          const user = userCredential.user;
+          user.sendEmailVerification();
+          db.collection('users').doc(user.uid).set({
+            fullName: name,
+            email: email,
+            createdAt: new Date()
+          });
+          document.getElementById('verify-msg').innerText = 'Verification email sent!';
+          document.getElementById('verify-msg').style.color = 'green';
         })
-        .then(() => {
-          document.getElementById('verify-msg').innerText = "Verification email sent.";
-        })
-        .catch(error => {
+        .catch((error) => {
           alert(error.message);
         });
     }
 
-    function login() {
+    function loginUser() {
       const email = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
 
       auth.signInWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          alert("Welcome back!");
+        .then((userCredential) => {
+          const user = userCredential.user;
+          if (user.emailVerified) {
+            document.getElementById('user-info').innerText = `Welcome, ${user.email}`;
+            closeModal('loginModal');
+          } else {
+            alert('Please verify your email before logging in.');
+          }
         })
-        .catch(error => {
+        .catch((error) => {
           alert(error.message);
         });
     }
 
-    function sendMessage() {
-      const input = document.getElementById('userInput');
-      const message = input.value.trim();
-      if (!message) return;
-
-      const messages = document.getElementById('chatbot-messages');
-      const userMsg = document.createElement('div');
-      userMsg.textContent = 'You: ' + message;
-      messages.appendChild(userMsg);
-
-      const botMsg = document.createElement('div');
-      botMsg.textContent = 'Bot: ' + generateFakeResponse(message);
-      messages.appendChild(botMsg);
-
-      input.value = '';
-      messages.scrollTop = messages.scrollHeight;
-    }
-
-    function generateFakeResponse(userMessage) {
-      if (userMessage.toLowerCase().includes("hello")) {
-        return "Hi! How can I assist you with MOBX Crewing today?";
-      } else if (userMessage.toLowerCase().includes("job")) {
-        return "Please visit our jobs section or sign up to get started.";
-      } else {
-        return "I'm here to help! Could you please clarify your question?";
-      }
+    function logoutUser() {
+      auth.signOut().then(() => {
+        document.getElementById('user-info').innerText = '';
+        alert('You have been logged out.');
+      });
     }
   </script>
 </body>

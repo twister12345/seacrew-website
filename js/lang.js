@@ -30,21 +30,7 @@ main
  commit 
 b1c4824
 File tree
-Filter files…
-js
-lang.js
-1 file changed
-+0
--146
-lines changed
-Search within code
- 
-‎js/lang.js
--146
-Lines changed: 0 additions & 146 deletions
-Original file line number	Diff line number	Diff line change
-@@ -1,147 +1 @@
-// lang.js: Language switching logic for MOBX Crewing
+
 
 const LANGUAGES = {
   en: {

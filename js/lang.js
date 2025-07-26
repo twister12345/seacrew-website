@@ -1,4 +1,4 @@
-// lang.js
+
 
 window.mobxLang = (function () {
   const translations = {

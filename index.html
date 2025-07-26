@@ -7,6 +7,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="js/lang.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -74,17 +75,6 @@
       text-align: right;
       background-color: #e0e0e0;
     }
-    .content {
-      padding: 30px;
-      max-width: 900px;
-      margin: auto;
-    }
-    .content h2 {
-      color: #003366;
-    }
-    .content p {
-      line-height: 1.6;
-    }
   </style>
 </head>
 <body>
@@ -92,64 +82,52 @@
     <h1>⚓ MOBX CREWING</h1>
     <div class="language-auth">
       <div>
-        <img src="https://flagcdn.com/w40/me.png" alt="CG" title="Crnogorski">
-        <img src="https://flagcdn.com/w40/gb.png" alt="EN" title="English">
+        <img id="flag-me" src="https://flagcdn.com/w40/me.png" alt="CG" title="Crnogorski">
+        <img id="flag-en" src="https://flagcdn.com/w40/gb.png" alt="EN" title="English">
       </div>
       <div>
-        <button onclick="openModal('loginModal')">Login</button>
-        <button onclick="openModal('signupModal')">Sign up</button>
-        <button onclick="logoutUser()">Logout</button>
+        <button id="btn-login" onclick="openModal('loginModal')">Login</button>
+        <button id="btn-signup" onclick="openModal('signupModal')">Sign up</button>
+        <button id="logoutBtn" onclick="logoutUser()">Logout</button>
       </div>
     </div>
   </header>
 
   <div id="user-info"></div>
 
-  <div class="content">
-    <h2>Welcome to MOBX Crewing Agency</h2>
-    <p>
-      MOBX Crewing is a professional maritime recruitment and crew management company dedicated to connecting highly qualified seafarers with global ship owners and operators. Our goal is to ensure optimal crew performance, safety, and satisfaction by providing reliable and skilled maritime personnel.
-    </p>
-    <h3>Our Services</h3>
-    <ul>
-      <li>Recruitment of Officers and Ratings for all vessel types</li>
-      <li>Pre-employment screening, certification checks, and interviews</li>
-      <li>Crew planning and scheduling</li>
-      <li>Travel and documentation support</li>
-      <li>Training and development support</li>
-    </ul>
-    <h3>Why Choose MOBX?</h3>
-    <ul>
-      <li>Extensive database of certified and experienced crew</li>
-      <li>Compliance with MLC 2006 and STCW standards</li>
-      <li>Personalized client approach and fast response times</li>
-      <li>Focus on safety, retention, and long-term partnerships</li>
-    </ul>
-    <p>
-      Whether you’re a shipowner seeking reliable crew or a seafarer looking for your next contract, MOBX Crewing is your trusted maritime HR partner.
-    </p>
-  </div>
+  <main style="padding: 20px;">
+    <h2 id="welcome-title"></h2>
+    <p id="welcome-intro"></p>
+
+    <h3 id="services-title"></h3>
+    <ul id="services-list"></ul>
+
+    <h3 id="why-title"></h3>
+    <ul id="why-list"></ul>
+
+    <p id="welcome-partner"></p>
+  </main>
 
   <!-- LOGIN MODAL -->
   <div id="loginModal" class="modal">
     <div class="modal-content">
-      <h2>Login</h2>
+      <h2 id="loginModalTitle">Login</h2>
       <input type="email" id="loginEmail" placeholder="Email">
       <input type="password" id="loginPassword" placeholder="Password">
-      <button onclick="loginUser()">Login</button>
-      <button onclick="closeModal('loginModal')" style="float:right;">Close</button>
+      <button id="login-submit-btn" onclick="loginUser()">Login</button>
+      <button id="login-close-btn" onclick="closeModal('loginModal')" style="float:right;">Close</button>
     </div>
   </div>
 
   <!-- SIGNUP MODAL -->
   <div id="signupModal" class="modal">
     <div class="modal-content">
-      <h2>Sign Up</h2>
+      <h2 id="signupModalTitle">Sign Up</h2>
       <input type="text" id="signupName" placeholder="Full Name">
       <input type="email" id="signupEmail" placeholder="Email">
       <input type="password" id="signupPassword" placeholder="Password">
-      <button onclick="signUpUser()">Sign Up</button>
-      <button onclick="closeModal('signupModal')" style="float:right;">Close</button>
+      <button id="signup-submit-btn" onclick="signUpUser()">Sign Up</button>
+      <button id="signup-close-btn" onclick="closeModal('signupModal')" style="float:right;">Close</button>
       <p id="verify-msg" style="margin-top:10px;"></p>
     </div>
   </div>
@@ -182,6 +160,9 @@
       const email = document.getElementById('signupEmail').value;
       const password = document.getElementById('signupPassword').value;
 
+      if (!name) return alert(window.mobxLang.t('signupErrorName'));
+      if (password.length < 6) return alert(window.mobxLang.t('signupErrorPassword'));
+
       auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
           const user = userCredential.user;
@@ -191,7 +172,7 @@
             email: email,
             createdAt: new Date()
           });
-          document.getElementById('verify-msg').innerText = 'Verification email sent!';
+          document.getElementById('verify-msg').innerText = window.mobxLang.t('signupSuccess');
           document.getElementById('verify-msg').style.color = 'green';
         })
         .catch((error) => {
@@ -207,10 +188,11 @@
         .then((userCredential) => {
           const user = userCredential.user;
           if (user.emailVerified) {
-            document.getElementById('user-info').innerText = `Welcome, ${user.email}`;
+            document.getElementById('user-info').innerText = `${window.mobxLang.t('welcomeUser')}, ${user.email}`;
+            document.getElementById('user-info').dataset.email = user.email;
             closeModal('loginModal');
           } else {
-            alert('Please verify your email before logging in.');
+            alert(window.mobxLang.t('loginErrorUnverified'));
           }
         })
         .catch((error) => {

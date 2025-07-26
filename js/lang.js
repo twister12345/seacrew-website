@@ -1,36 +1,4 @@
-
-Skip to content
-Navigation Menu
-twister12345
-seacrew-website
-
-Type / to search
-Code
-Issues
-Pull requests
-Actions
-Projects
-Wiki
-Security
-1
-Insights
-Settings
-Commit b1c4824
-twister12345
-twister12345
-authored
-4 minutes ago
-·
-·
-Verified
-Update lang.js
-main
-1 parent 
-4944338
- commit 
-b1c4824
-File tree
-
+// lang.js: Language switching logic for MOBX Crewing
 
 const LANGUAGES = {
   en: {
@@ -108,15 +76,19 @@ const LANGUAGES = {
     welcomeUser: "Dobrodošli"
   }
 };
+
 let currentLang = localStorage.getItem('mobx-lang') || 'en';
+
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value;
 }
+
 function setPlaceholder(id, value) {
   const el = document.getElementById(id);
   if (el) el.placeholder = value;
 }
+
 function updateLanguageUI() {
   const t = LANGUAGES[currentLang];
   setText('welcome-title', t.welcome);
@@ -142,19 +114,20 @@ function updateLanguageUI() {
   setPlaceholder('signupPassword', t.signupPlaceholderPassword);
   setText('signup-submit-btn', t.signup);
   setText('signup-close-btn', t.close);
-  // Update user info greeting if user is logged in
+
   const userInfo = document.getElementById('user-info');
   if (userInfo && userInfo.dataset.email) {
     userInfo.textContent = `${t.welcomeUser}, ${userInfo.dataset.email}`;
   }
 }
+
 function switchLanguage(lang) {
   if (!LANGUAGES[lang]) return;
   currentLang = lang;
   localStorage.setItem('mobx-lang', lang);
   updateLanguageUI();
 }
-// Flag click handlers
+
 window.addEventListener('DOMContentLoaded', () => {
   const flagMe = document.getElementById('flag-me');
   const flagEn = document.getElementById('flag-en');
@@ -162,6 +135,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (flagEn) flagEn.addEventListener('click', () => switchLanguage('en'));
   updateLanguageUI();
 });
+
 window.mobxLang = {
   get: () => currentLang,
   t: (key) => LANGUAGES[currentLang][key] || key

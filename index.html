@@ -81,6 +81,47 @@
     h2 {
       color: #003366;
     }
+    .modern-button {
+      padding: 12px 20px;
+      background-color: #0056b3;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 20px 0;
+    }
+    .modern-button:hover {
+      background-color: #003d80;
+    }
+    #insurance-text p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #333;
+      margin-bottom: 16px;
+    }
+    #chat-bot {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 12px;
+      width: 250px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    #contact-info {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 14px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -102,8 +143,21 @@
   <div id="user-info" data-email=""></div>
 
   <main>
-    <h2 id="welcome-title"></h2>
+    <h2 id="welcome-title">Welcome</h2>
     <p id="welcome-intro"></p>
+
+    <button class="modern-button" onclick="document.getElementById('insurance-text').scrollIntoView({ behavior: 'smooth' })">
+      Explore Our Crewing Services
+    </button>
+
+    <section id="insurance-text" style="margin-top: 40px;">
+      <h3 style="color: #003366;">Insurance Services</h3>
+      <p>When something goes wrong, both the financial fallout and impact on one’s reputation can create a devastating domino effect for large and small businesses alike. That’s why it’s paramount you opt for insurance services from an experienced company that understands the shipping and marine industry inside out. That way, when a disruption occurs, you’ll get the support you need.</p>
+      <p>MOBX-CREWING has earned an international reputation for delivering top-tier insurance services. Our professional, efficient claims management team provides clients with reliable, effective support built through decades of experience.</p>
+      <p>We understand the critical role of shipping in the global economy. With knowledge of varying vessel risks, we negotiate cost-effective prices from underwriters and pass savings to clients. This ensures comprehensive protection and coverage from liabilities and risks.</p>
+      <p>Our in-house insurance broking company, V.Scope Risk Management Ltd., integrates marine insurance services to deliver the best customer experience and coverage tailored to your vessels and operations.</p>
+      <p>V.Group's extensive marine service network supports a wide client base — from shipowners and banks to unions and offshore contractors. <a href="#">Check here</a> for more.</p>
+    </section>
 
     <h3 id="services-title"></h3>
     <ul id="services-list"></ul>
@@ -114,104 +168,15 @@
     <p id="welcome-partner"></p>
   </main>
 
-  <!-- LOGIN MODAL -->
-  <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <h2 id="loginModalTitle"></h2>
-      <input type="email" id="loginEmail" placeholder="Email">
-      <input type="password" id="loginPassword" placeholder="Password">
-      <button id="login-submit-btn" onclick="loginUser()">Login</button>
-      <button id="login-close-btn" onclick="closeModal('loginModal')" style="float:right;">Close</button>
-    </div>
+  <div id="chat-bot">
+    <strong>Chat with us</strong>
+    <p style="font-size: 12px; color: #555;">This is a demo chat box.</p>
   </div>
 
-  <!-- SIGNUP MODAL -->
-  <div id="signupModal" class="modal">
-    <div class="modal-content">
-      <h2 id="signupModalTitle"></h2>
-      <input type="text" id="signupName" placeholder="Full Name">
-      <input type="email" id="signupEmail" placeholder="Email">
-      <input type="password" id="signupPassword" placeholder="Password">
-      <button id="signup-submit-btn" onclick="signUpUser()">Sign Up</button>
-      <button id="signup-close-btn" onclick="closeModal('signupModal')" style="float:right;">Close</button>
-      <p id="verify-msg" style="margin-top:10px;"></p>
-    </div>
+  <div id="contact-info">
+    <strong>Contact us:</strong><br>
+    Mail: antunovicsreten@gmail.com<br>
+    Tel: +38269231172
   </div>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDBCwn0gpqIfxGFhjgPyp4djv34N4rpMyI",
-      authDomain: "mobx-auth-77004.firebaseapp.com",
-      projectId: "mobx-auth-77004",
-      storageBucket: "mobx-auth-77004.appspot.com",
-      messagingSenderId: "155941750383",
-      appId: "1:155941750383:web:3a5341bad5ebd91aff2f9a",
-      measurementId: "G-0BJ503BRT6"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    function openModal(id) {
-      document.getElementById(id).style.display = 'block';
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).style.display = 'none';
-    }
-
-    function signUpUser() {
-      const name = document.getElementById('signupName').value;
-      const email = document.getElementById('signupEmail').value;
-      const password = document.getElementById('signupPassword').value;
-
-      auth.createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          user.sendEmailVerification();
-          db.collection('users').doc(user.uid).set({
-            fullName: name,
-            email: email,
-            createdAt: new Date()
-          });
-          document.getElementById('verify-msg').innerText = window.mobxLang.t('signupSuccess');
-          document.getElementById('verify-msg').style.color = 'green';
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
-    }
-
-    function loginUser() {
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-
-      auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          if (user.emailVerified) {
-            const info = document.getElementById('user-info');
-            info.dataset.email = user.email;
-            info.innerText = `${window.mobxLang.t('welcomeUser')}, ${user.email}`;
-            closeModal('loginModal');
-          } else {
-            alert(window.mobxLang.t('loginErrorUnverified'));
-          }
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
-    }
-
-    function logoutUser() {
-      auth.signOut().then(() => {
-        const info = document.getElementById('user-info');
-        info.innerText = '';
-        info.dataset.email = '';
-        alert('You have been logged out.');
-      });
-    }
-  </script>
 </body>
 </html>

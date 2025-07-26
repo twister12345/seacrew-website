@@ -75,6 +75,12 @@
       text-align: right;
       background-color: #e0e0e0;
     }
+    main {
+      padding: 20px;
+    }
+    h2 {
+      color: #003366;
+    }
   </style>
 </head>
 <body>
@@ -93,9 +99,9 @@
     </div>
   </header>
 
-  <div id="user-info"></div>
+  <div id="user-info" data-email=""></div>
 
-  <main style="padding: 20px;">
+  <main>
     <h2 id="welcome-title"></h2>
     <p id="welcome-intro"></p>
 
@@ -111,7 +117,7 @@
   <!-- LOGIN MODAL -->
   <div id="loginModal" class="modal">
     <div class="modal-content">
-      <h2 id="loginModalTitle">Login</h2>
+      <h2 id="loginModalTitle"></h2>
       <input type="email" id="loginEmail" placeholder="Email">
       <input type="password" id="loginPassword" placeholder="Password">
       <button id="login-submit-btn" onclick="loginUser()">Login</button>
@@ -122,7 +128,7 @@
   <!-- SIGNUP MODAL -->
   <div id="signupModal" class="modal">
     <div class="modal-content">
-      <h2 id="signupModalTitle">Sign Up</h2>
+      <h2 id="signupModalTitle"></h2>
       <input type="text" id="signupName" placeholder="Full Name">
       <input type="email" id="signupEmail" placeholder="Email">
       <input type="password" id="signupPassword" placeholder="Password">
@@ -160,9 +166,6 @@
       const email = document.getElementById('signupEmail').value;
       const password = document.getElementById('signupPassword').value;
 
-      if (!name) return alert(window.mobxLang.t('signupErrorName'));
-      if (password.length < 6) return alert(window.mobxLang.t('signupErrorPassword'));
-
       auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
           const user = userCredential.user;
@@ -188,8 +191,9 @@
         .then((userCredential) => {
           const user = userCredential.user;
           if (user.emailVerified) {
-            document.getElementById('user-info').innerText = `${window.mobxLang.t('welcomeUser')}, ${user.email}`;
-            document.getElementById('user-info').dataset.email = user.email;
+            const info = document.getElementById('user-info');
+            info.dataset.email = user.email;
+            info.innerText = `${window.mobxLang.t('welcomeUser')}, ${user.email}`;
             closeModal('loginModal');
           } else {
             alert(window.mobxLang.t('loginErrorUnverified'));
@@ -202,7 +206,9 @@
 
     function logoutUser() {
       auth.signOut().then(() => {
-        document.getElementById('user-info').innerText = '';
+        const info = document.getElementById('user-info');
+        info.innerText = '';
+        info.dataset.email = '';
         alert('You have been logged out.');
       });
     }

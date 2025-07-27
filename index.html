@@ -8,6 +8,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="js/lang.js"></script>
+  <script src="js/auth.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -135,7 +136,7 @@
       <div>
         <button id="btn-login" onclick="openModal('loginModal')">Login</button>
         <button id="btn-signup" onclick="openModal('signupModal')">Sign up</button>
-        <button id="logoutBtn" onclick="logoutUser()">Logout</button>
+        <button id="logoutBtn" onclick="logoutUser()" style="display:none">Logout</button>
       </div>
     </div>
   </header>
@@ -151,12 +152,12 @@
     </button>
 
     <section id="insurance-text" style="margin-top: 40px;">
-      <h3 style="color: #003366;">Insurance Services</h3>
-      <p>When something goes wrong, both the financial fallout and impact on one’s reputation can create a devastating domino effect for large and small businesses alike. That’s why it’s paramount you opt for insurance services from an experienced company that understands the shipping and marine industry inside out. That way, when a disruption occurs, you’ll get the support you need.</p>
-      <p>MOBX-CREWING has earned an international reputation for delivering top-tier insurance services. Our professional, efficient claims management team provides clients with reliable, effective support built through decades of experience.</p>
-      <p>We understand the critical role of shipping in the global economy. With knowledge of varying vessel risks, we negotiate cost-effective prices from underwriters and pass savings to clients. This ensures comprehensive protection and coverage from liabilities and risks.</p>
-      <p>Our in-house insurance broking company,  Risk Management Ltd., integrates marine insurance services to deliver the best customer experience and coverage tailored to your vessels and operations.</p>
-      <p>MOBX-CREWINGSA extensive marine service network supports a wide client base — from shipowners and banks to unions and offshore contractors. <a href="#">Check here</a> for more.</p>
+      <h3 id="insurance-title" style="color: #003366;">Insurance Services</h3>
+      <p id="insurance-p1"></p>
+      <p id="insurance-p2"></p>
+      <p id="insurance-p3"></p>
+      <p id="insurance-p4"></p>
+      <p id="insurance-p5"></p>
     </section>
 
     <h3 id="services-title"></h3>
@@ -178,6 +179,28 @@
     Mail: antunovicsreten@gmail.com<br>
     Tel: +38269231172
   </div>
-<script src="js/lang.js"></script>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <h2>Login</h2>
+      <input type="email" id="login-email" placeholder="Email" />
+      <input type="password" id="login-password" placeholder="Password" />
+      <button onclick="loginUser()">Login</button>
+      <button onclick="closeModals()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+  <div id="signupModal" class="modal">
+    <div class="modal-content">
+      <h2>Sign Up</h2>
+      <input type="email" id="signup-email" placeholder="Email" />
+      <input type="password" id="signup-password" placeholder="Password" />
+      <button onclick="signupUser()">Sign Up</button>
+      <button onclick="closeModals()">Cancel</button>
+    </div>
+  </div>
+
 </body>
 </html>

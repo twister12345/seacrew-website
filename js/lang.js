@@ -1,74 +1,77 @@
+// lang.js
+
 document.addEventListener("DOMContentLoaded", () => {
   const translations = {
     en: {
       welcomeTitle: "Welcome",
-      welcomeIntro: "Explore global maritime crewing solutions with MOBX-CREWING.",
-      welcomePartner: "We’re proud to partner with global shipping leaders.",
+      welcomeIntro: "Explore global crewing and maritime solutions with MOBX CREWING.",
       servicesTitle: "Our Services",
-      servicesList: [
+      services: [
         "Crew Management",
         "Recruitment & Training",
         "Maritime Logistics",
-        "Technical Consulting",
+        "Technical Consulting"
       ],
-      whyTitle: "Why MOBX?",
-      whyList: [
-        "Global network & experience",
+      whyTitle: "Why Choose Us",
+      whyPoints: [
+        "Global reach with local expertise",
         "Reliable & efficient processes",
         "Dedicated to safety and compliance",
-        "24/7 support & crew welfare",
+        "24/7 operational support"
       ],
+      welcomePartner: "Partner with MOBX CREWING for your maritime success."
     },
+
     me: {
       welcomeTitle: "Dobrodošli",
-      welcomeIntro: "Istražite globalna rešenja za brodsku posadu sa MOBX-CREWING-om.",
-      welcomePartner: "Ponosni smo što sarađujemo sa liderima u pomorskom sektoru.",
-      servicesTitle: "Naše Usluge",
-      servicesList: [
+      welcomeIntro: "Istražite globalna rješenja za posadu i pomorstvo sa MOBX CREWING.",
+      servicesTitle: "Naše usluge",
+      services: [
         "Upravljanje posadom",
         "Regrutacija i obuka",
         "Pomorska logistika",
-        "Tehničko savjetovanje",
+        "Tehničko savjetovanje"
       ],
-      whyTitle: "Zašto MOBX?",
-      whyList: [
-        "Globalna mreža i iskustvo",
+      whyTitle: "Zašto izabrati nas",
+      whyPoints: [
+        "Globalni domet uz lokalno znanje",
         "Pouzdani i efikasni procesi",
         "Posvećenost bezbjednosti i usklađenosti",
-        "Podrška 24/7 i dobrobit posade",
+        "Podrška 24/7"
       ],
+      welcomePartner: "Partnerstvo sa MOBX CREWING za vaš pomorski uspjeh."
     }
   };
 
-  function setLanguage(lang) {
+  function updateText(lang) {
     const t = translations[lang];
+    document.getElementById("welcome-title").innerText = t.welcomeTitle;
+    document.getElementById("welcome-intro").innerText = t.welcomeIntro;
+    document.getElementById("services-title").innerText = t.servicesTitle;
+    document.getElementById("why-title").innerText = t.whyTitle;
+    document.getElementById("welcome-partner").innerText = t.welcomePartner;
 
-    document.getElementById("welcome-title").textContent = t.welcomeTitle;
-    document.getElementById("welcome-intro").textContent = t.welcomeIntro;
-    document.getElementById("services-title").textContent = t.servicesTitle;
-    document.getElementById("why-title").textContent = t.whyTitle;
-    document.getElementById("welcome-partner").textContent = t.welcomePartner;
-
-    const servicesList = document.getElementById("services-list");
-    servicesList.innerHTML = "";
-    t.servicesList.forEach(service => {
+    const serviceList = document.getElementById("services-list");
+    serviceList.innerHTML = "";
+    t.services.forEach(service => {
       const li = document.createElement("li");
       li.textContent = service;
-      servicesList.appendChild(li);
+      serviceList.appendChild(li);
     });
 
     const whyList = document.getElementById("why-list");
     whyList.innerHTML = "";
-    t.whyList.forEach(why => {
+    t.whyPoints.forEach(point => {
       const li = document.createElement("li");
-      li.textContent = why;
+      li.textContent = point;
       whyList.appendChild(li);
     });
   }
 
-  document.getElementById("flag-me")?.addEventListener("click", () => setLanguage("me"));
-  document.getElementById("flag-en")?.addEventListener("click", () => setLanguage("en"));
+  // Flag click events
+  document.getElementById("flag-en")?.addEventListener("click", () => updateText("en"));
+  document.getElementById("flag-me")?.addEventListener("click", () => updateText("me"));
 
-  // Default language
-  setLanguage("en");
+  // Default to English
+  updateText("en");
 });

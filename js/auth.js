@@ -1,77 +1,65 @@
-// Firebase config (already initialized in HTML)
+// js/auth.js
+// Import Firebase SDK
+const firebaseConfig = {
+  apiKey: "AIzaSyDBCwn0gpqIfxGFhjgPyp4djv34N4rpMyI",
+  authDomain: "mobx-auth-77004.firebaseapp.com",
+  projectId: "mobx-auth-77004",
+  storageBucket: "mobx-auth-77004.appspot.com",
+  messagingSenderId: "155941750383",
+  appId: "1:155941750383:web:3a5341bad5ebd91aff2f9a",
+  measurementId: "G-0BJ503BRT6"
+};
 
+firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-// Show modals
-function openModal(id) {
-  document.getElementById(id).style.display = 'block';
+// Auth functions
+function loginUser() {
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      closeModals();
+      updateUserUI(userCredential.user);
+    })
+    .catch(error => alert("Login Error: " + error.message));
 }
-function closeModal(id) {
-  document.getElementById(id).style.display = 'none';
+
+function signUpUser() {
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
+
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      closeModals();
+      updateUserUI(userCredential.user);
+    })
+    .catch(error => alert("Signup Error: " + error.message));
 }
 
-// LOGIN
-document.addEventListener("DOMContentLoaded", () => {
-  const loginBtn = document.getElementById("loginSubmit");
-  if (loginBtn) {
-    loginBtn.addEventListener("click", () => {
-      const email = document.getElementById("loginEmail").value;
-      const password = document.getElementById("loginPassword").value;
-
-      auth.signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          alert("Login successful");
-          closeModal('loginModal');
-          updateUserInfo(userCredential.user);
-        })
-        .catch((error) => {
-          alert("Login failed: " + error.message);
-        });
-    });
-  }
-
-  // SIGNUP
-  const signupBtn = document.getElementById("signupSubmit");
-  if (signupBtn) {
-    signupBtn.addEventListener("click", () => {
-      const email = document.getElementById("signupEmail").value;
-      const password = document.getElementById("signupPassword").value;
-
-      auth.createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          alert("Signup successful");
-          closeModal('signupModal');
-          updateUserInfo(userCredential.user);
-        })
-        .catch((error) => {
-          alert("Signup failed: " + error.message);
-        });
-    });
-  }
-
-  // LOGOUT
-  const logoutBtn = document.getElementById("logoutBtn");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      auth.signOut().then(() => {
-        alert("Logged out");
-        updateUserInfo(null);
-      });
-    });
-  }
-
-  // Monitor auth state
-  auth.onAuthStateChanged(user => {
-    updateUserInfo(user);
+function logoutUser() {
+  auth.signOut().then(() => {
+    updateUserUI(null);
   });
+}
+
+function updateUserUI(user) {
+  const userInfo = document.getElementById("user-info");
+  if (user) {
+    userInfo.innerHTML = `Logged in as: ${user.email}`;
+  } else {
+    userInfo.innerHTML = "";
+  }
+}
+
+auth.onAuthStateChanged(user => {
+  updateUserUI(user);
 });
 
-// Update user info in header
-function updateUserInfo(user) {
-  const userInfoDiv = document.getElementById("user-info");
-  if (user) {
-    userInfoDiv.innerText = `Logged in as: ${user.email}`;
-  } else {
-    userInfoDiv.innerText = '';
-  }
+// Close modal helper
+function closeModals() {
+  document.querySelectorAll('.modal').forEach(modal => {
+    modal.style.display = "none";
+  });
 }
